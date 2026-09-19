@@ -1,6 +1,7 @@
 package com.dbzbanten.unityadblock
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.VpnService
 import android.os.Bundle
 import android.widget.*
