@@ -10,56 +10,60 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
-        
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
-      
-    - name: Make gradlew executable
-      run: chmod +x gradlew
-      
-    # Decode keystore dari secrets
-    - name: Decode Keystore
-      run: |
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > app/keystore.jks
-        ls -la app/keystore.jks
-        
-    # Build signed APK
-    - name: Build Signed APK
-      run: |
-        ./gradlew assembleRelease \
-          -Pandroid.injected.signing.store.file=keystore.jks \
-          -Pandroid.injected.signing.store.password=${{ secrets.KEYSTORE_PASSWORD }} \
-          -Pandroid.injected.signing.key.alias=${{ secrets.KEY_ALIAS }} \
-          -Pandroid.injected.signing.key.password=${{ secrets.KEY_PASSWORD }}
-          
-    - name: Rename APK
-      run: |
-        mkdir -p output
-        cp app/build/outputs/apk/release/app-release.apk \
-           output/UnityAdsBlocker-SIGNED.apk
-           
-    - name: Upload Signed APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: UnityAdsBlocker-SIGNED
-        path: output/UnityAdsBlocker-SIGNED.apk
-        
-    - name: Upload to Release (if tag)
-      if: startsWith(github.ref, 'refs/tags/')
-      uses: softprops/action-gh-release@v1
-      with:
-        files: output/*.apk
-        name: "Unity Ads Blocker ${{ github.ref_name }}"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Show Android SDK environment
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          sdkmanager --version
+          adb version || true
+
+      - name: Decode Keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > app/keystore.jks
+          test -s app/keystore.jks
+          ls -lh app/keystore.jks
+
+      - name: Build Signed APK
+        run: |
+          ./gradlew clean assembleRelease \
+            -Pandroid.injected.signing.store.file="$GITHUB_WORKSPACE/app/keystore.jks" \
+            -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"
+
+      - name: Rename APK
+        run: |
+          mkdir -p output
+          cp app/build/outputs/apk/release/app-release.apk \
+             output/UnityAdsBlocker-SIGNED.apk
+
+      - name: Upload Signed APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: UnityAdsBlocker-SIGNED
+          path: output/UnityAdsBlocker-SIGNED.apk
+
+      - name: Remove Keystore
+        if: always()
+        run: |
+          rm -f app/keystore.jks
