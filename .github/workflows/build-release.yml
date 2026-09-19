@@ -31,21 +31,25 @@ jobs:
         run: |
           printf '%s' "$KEYSTORE_BASE64" | base64 --decode > app/keystore.jks
           test -s app/keystore.jks
-          ls -lh app/keystore.jks
 
       - name: Build Signed APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          ./gradlew clean assembleRelease \
-            -Pandroid.injected.signing.store.file="$GITHUB_WORKSPACE/app/keystore.jks" \
-            -Pandroid.injected.signing.store.password="${{ secrets.KEYSTORE_PASSWORD }}" \
-            -Pandroid.injected.signing.key.alias="${{ secrets.KEY_ALIAS }}" \
-            -Pandroid.injected.signing.key.password="${{ secrets.KEY_PASSWORD }}"
+          ./gradlew clean assembleRelease --console=plain
+
+      - name: Verify APK
+        run: |
+          test -s app/build/outputs/apk/release/app-release.apk
+          ls -lh app/build/outputs/apk/release/app-release.apk
 
       - name: Rename APK
         run: |
           mkdir -p output
           cp app/build/outputs/apk/release/app-release.apk \
-             output/UnityAdsBlocker-SIGNED.apk
+            output/UnityAdsBlocker-SIGNED.apk
 
       - name: Upload Signed APK
         uses: actions/upload-artifact@v4
