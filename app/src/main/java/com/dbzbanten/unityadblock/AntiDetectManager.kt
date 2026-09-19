@@ -63,7 +63,7 @@ class AntiDetectManager(context: Context) {
             
             # Block deteksi file
             for path in /su /system/bin/su /system/xbin/su /magisk /data/adb/magisk; do
-                mount -o bind /dev/null "\$path" 2>/dev/null
+                mount-obind/dev/null"${'$'}path"2>/dev/null
             done
             
             # Hide Shizuku traces
