@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.UnityAdsAdblock" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/unity_blue</item>
+        <item name="colorPrimaryDark">@color/unity_blue_dark</item>
+        <item name="colorAccent">@color/unity_blue_accent</item>
+        <item name="android:windowBackground">@color/bg_dark</item>
+        <item name="android:statusBarColor">@color/unity_blue_dark</item>
+        <item name="android:navigationBarColor">@color/bg_dark</item>
+    </style>
+    
+    <style name="Theme.UnityAdsAdblock.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources>

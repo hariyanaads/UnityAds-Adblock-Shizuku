@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_gradient"
+    android:padding="16dp">
+
+    <!-- Header -->
+    <TextView
+        android:id="@+id/tv_dbzbanten"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DBZBANTEN"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/unity_white"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp"
+        android:shadowColor="@color/unity_blue_dark"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="4"/>
+
+    <TextView
+        android:id="@+id/tv_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Unity Ads Blocker"
+        android:textSize="14sp"
+        android:textColor="@color/unity_gray_light"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Status Card -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="8dp"
+        app:cardBackgroundColor="@color/unity_blue">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="● READY"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/unity_white"/>
+
+            <TextView
+                android:id="@+id/tv_shizuku_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Shizuku: Checking..."
+                android:textSize="14sp"
+                android:textColor="@color/unity_gray_light"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Shizuku Section -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/card_bg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SHIZUKU MODE"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/unity_blue"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Non-root system hosts modification"
+                android:textSize="12sp"
+                android:textColor="@color/unity_gray_light"
+                android:layout_marginBottom="12dp"/>
+
+            <Button
+                android:id="@+id/btn_check_shizuku"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Check Shizuku Connection"
+                android:backgroundTint="@color/unity_blue"
+                android:textColor="@color/unity_white"/>
+
+            <Button
+                android:id="@+id/btn_apply_hosts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Apply System Hosts"
+                android:layout_marginTop="8dp"
+                android:enabled="false"
+                android:backgroundTint="@color/unity_blue_dark"
+                android:textColor="@color/unity_white"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- VPN Section -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/card_bg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="VPN Mode"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/unity_white"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Local VPN ad blocking"
+                    android:textSize="12sp"
+                    android:textColor="@color/unity_gray_light"/>
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/switch_vpn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:trackTint="@color/unity_blue"
+                android:thumbTint="@color/unity_white"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Bypass Options -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:cardBackgroundColor="@color/card_bg">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BYPASS OPTIONS"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/unity_blue"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Anti-Detect Mode"
+                    android:textColor="@color/unity_white"/>
+
+                <Switch
+                    android:id="@+id/switch_anti_detect"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Unity Bypass"
+                    android:textColor="@color/unity_white"/>
+
+                <Switch
+                    android:id="@+id/switch_unity_bypass"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Reward Spoof"
+                    android:textColor="@color/unity_white"/>
+
+                <Switch
+                    android:id="@+id/switch_reward_spoof"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Footer -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Powered by Shizuku • Non-Root Solution"
+        android:textSize="12sp"
+        android:textColor="@color/unity_gray"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="8dp"/>
+
+</LinearLayout>

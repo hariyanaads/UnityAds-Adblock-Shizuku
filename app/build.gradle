@@ -1,0 +1,21 @@
+android {
+    // ... config lainnya ...
+    
+    signingConfigs {
+        release {
+            // Tidak hardcode, akan diinject oleh CI/CD
+            storeFile file("keystore.jks")
+            storePassword System.getenv("KEYSTORE_PASSWORD") ?: "DbzBanten18"
+            keyAlias System.getenv("KEY_ALIAS") ?: "DbzBanten"
+            keyPassword System.getenv("KEY_PASSWORD") ?: "DbzBanten18"
+        }
+    }
+    
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+}
