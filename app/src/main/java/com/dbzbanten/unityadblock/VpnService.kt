@@ -26,6 +26,15 @@ class VpnService : VpnService() {
         const val TAG = "UnityVpnService"
         const val NOTIFICATION_ID = 1
         const val CHANNEL_ID = "unity_adblock_channel"
+
+        const val ACTION_VPN_STATUS =
+            "com.dbzbanten.unityadblock.VPN_STATUS"
+        const val EXTRA_STATUS = "status"
+
+        const val STATUS_STARTING = "STARTING"
+        const val STATUS_STARTED = "STARTED"
+        const val STATUS_FAILED = "FAILED"
+        const val STATUS_STOPPED = "STOPPED"
     }
     
     override fun onCreate() {
@@ -54,6 +63,7 @@ class VpnService : VpnService() {
                 )
             }
 
+            sendVpnStatus(STATUS_STARTING)
             startVpn()
             return START_STICKY
         } catch (e: Exception) {
@@ -80,9 +90,11 @@ class VpnService : VpnService() {
 
             Thread { processPackets() }.start()
 
+            sendVpnStatus(STATUS_STARTED)
             Log.d(TAG, "VPN Started")
         } catch (e: Exception) {
             Log.e(TAG, "Error starting VPN", e)
+            sendVpnStatus(STATUS_FAILED)
             cleanupVpn()
             stopSelf()
         }
@@ -113,11 +125,20 @@ class VpnService : VpnService() {
         isRunning = false
         vpnInterface?.close()
         vpnInterface = null
+        sendVpnStatus(STATUS_STOPPED)
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
         Log.d(TAG, "VPN Stopped")
     }
     
+    private fun sendVpnStatus(status: String) {
+        sendBroadcast(
+            Intent(ACTION_VPN_STATUS)
+                .setPackage(packageName)
+                .putExtra(EXTRA_STATUS, status)
+        )
+    }
+
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -147,6 +168,7 @@ class VpnService : VpnService() {
     
     override fun onRevoke() {
         Log.w(TAG, "VPN permission revoked")
+        sendVpnStatus(STATUS_FAILED)
         cleanupVpn()
         super.onRevoke()
     }

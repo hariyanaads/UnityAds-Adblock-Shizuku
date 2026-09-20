@@ -1,6 +1,8 @@
 package com.dbzbanten.unityadblock
 
+import android.content.BroadcastReceiver
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.VpnService
 import android.os.Bundle
@@ -15,6 +17,71 @@ import kotlinx.coroutines.launch
 import rikka.shizuku.Shizuku
 
 class MainActivity : AppCompatActivity() {
+
+    private var updatingVpnSwitch = false
+
+    private val vpnStatusReceiver = object : BroadcastReceiver() {
+        override fun onReceive(
+            context: android.content.Context?,
+            intent: Intent?
+        ) {
+            if (intent?.action != VpnService.ACTION_VPN_STATUS) return
+
+            when (intent.getStringExtra(VpnService.EXTRA_STATUS)) {
+                VpnService.STATUS_STARTING -> {
+                    tvStatus.text = "Starting VPN..."
+                    cardStatus.setCardBackgroundColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.unity_gray
+                        )
+                    )
+                }
+
+                VpnService.STATUS_STARTED -> {
+                    updatingVpnSwitch = true
+                    switchVpn.isChecked = true
+                    updatingVpnSwitch = false
+
+                    tvStatus.text = "VPN Active"
+                    cardStatus.setCardBackgroundColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.unity_blue
+                        )
+                    )
+                }
+
+                VpnService.STATUS_FAILED -> {
+                    updatingVpnSwitch = true
+                    switchVpn.isChecked = false
+                    updatingVpnSwitch = false
+
+                    tvStatus.text = "VPN Failed"
+                    cardStatus.setCardBackgroundColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.unity_gray
+                        )
+                    )
+                }
+
+                VpnService.STATUS_STOPPED -> {
+                    updatingVpnSwitch = true
+                    switchVpn.isChecked = false
+                    updatingVpnSwitch = false
+
+                    tvStatus.text = "VPN Stopped"
+                    cardStatus.setCardBackgroundColor(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.unity_gray
+                        )
+                    )
+                }
+            }
+        }
+    }
     
     private lateinit var shizukuHelper: ShizukuHelper
     private lateinit var hostsManager: HostsManager
@@ -84,6 +151,10 @@ class MainActivity : AppCompatActivity() {
         }
         
         switchVpn.setOnCheckedChangeListener { _, isChecked ->
+            if (updatingVpnSwitch) {
+                return@setOnCheckedChangeListener
+            }
+
             if (isChecked) {
                 requestVpnPermission()
             } else {
@@ -173,10 +244,13 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun startVpnService() {
+        tvStatus.text = "Starting VPN..."
+        cardStatus.setCardBackgroundColor(
+            ContextCompat.getColor(this, R.color.unity_gray)
+        )
+
         val intent = Intent(this, VpnService::class.java)
         ContextCompat.startForegroundService(this, intent)
-        tvStatus.text = "VPN Active - Blocking Unity Ads"
-        cardStatus.setCardBackgroundColor(ContextCompat.getColor(this, R.color.unity_blue))
     }
     
     private fun stopVpnService() {
@@ -192,6 +266,22 @@ class MainActivity : AppCompatActivity() {
         checkShizukuStatus()
     }
     
+    override fun onStart() {
+        super.onStart()
+
+        ContextCompat.registerReceiver(
+            this,
+            vpnStatusReceiver,
+            IntentFilter(VpnService.ACTION_VPN_STATUS),
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
+    }
+
+    override fun onStop() {
+        unregisterReceiver(vpnStatusReceiver)
+        super.onStop()
+    }
+
     override fun onResume() {
         super.onResume()
         checkShizukuStatus()
