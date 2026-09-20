@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.net.VpnService
+import android.net.VpnService as AndroidVpnService
 import android.os.Bundle
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
@@ -235,7 +235,7 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun requestVpnPermission() {
-        val intent = VpnService.prepare(this)
+        val intent = AndroidVpnService.prepare(this)
         if (intent != null) {
             vpnLauncher.launch(intent)
         } else {

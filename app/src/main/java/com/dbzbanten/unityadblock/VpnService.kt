@@ -5,7 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
-import android.net.VpnService
+import android.net.VpnService as AndroidVpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.content.pm.ServiceInfo
@@ -16,7 +16,7 @@ import java.net.InetSocketAddress
 import java.nio.ByteBuffer
 import java.nio.channels.DatagramChannel
 
-class VpnService : VpnService() {
+class VpnService : AndroidVpnService() {
     
     private var vpnInterface: ParcelFileDescriptor? = null
     private var isRunning = false
