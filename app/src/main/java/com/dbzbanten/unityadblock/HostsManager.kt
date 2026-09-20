@@ -95,16 +95,24 @@ class HostsManager(private val context: Context) {
     
     fun applyHostsViaShizuku(): Boolean {
         return try {
-            // Mount system sebagai writable
-            shizukuHelper.mountSystemWritable()
-            
-            // Backup hosts original
-            shizukuHelper.backupHosts()
-            
-            // Generate dan tulis hosts baru
+            if (!shizukuHelper.mountSystemWritable()) {
+                return false
+            }
+
+            if (!shizukuHelper.backupHosts()) {
+                return false
+            }
+
             val hostsContent = generateHostsContent()
-            shizukuHelper.writeFileWithRoot("/system/etc/hosts", hostsContent)
-            
+
+            if (!shizukuHelper.writeFileWithRoot(
+                    "/system/etc/hosts",
+                    hostsContent
+                )
+            ) {
+                return false
+            }
+
             true
         } catch (e: Exception) {
             false

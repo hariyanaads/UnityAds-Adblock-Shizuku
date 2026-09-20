@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
+import android.content.pm.ServiceInfo
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import java.io.*
@@ -38,31 +39,52 @@ class VpnService : VpnService() {
             stopVpn()
             return START_NOT_STICKY
         }
-        
-        startForeground(NOTIFICATION_ID, createNotification())
-        startVpn()
-        return START_STICKY
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(
+                    NOTIFICATION_ID,
+                    createNotification(),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                )
+            } else {
+                startForeground(
+                    NOTIFICATION_ID,
+                    createNotification()
+                )
+            }
+
+            startVpn()
+            return START_STICKY
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to start VPN service", e)
+            cleanupVpn()
+            stopSelf()
+            return START_NOT_STICKY
+        }
     }
     
     private fun startVpn() {
         if (isRunning) return
-        
+
         try {
             val builder = Builder()
+                .setSession("Unity Ads Blocker")
                 .addAddress("10.0.0.2", 24)
                 .addDnsServer("8.8.8.8")
-                .addRoute("0.0.0.0", 0)
                 .establish()
-            
+                ?: throw IllegalStateException("VPN interface could not be established")
+
             vpnInterface = builder
             isRunning = true
-            
-            // Start packet processing
+
             Thread { processPackets() }.start()
-            
+
             Log.d(TAG, "VPN Started")
         } catch (e: Exception) {
-            Log.e(TAG, "Error starting VPN: ${e.message}")
+            Log.e(TAG, "Error starting VPN", e)
+            cleanupVpn()
+            stopSelf()
         }
     }
     
@@ -123,8 +145,21 @@ class VpnService : VpnService() {
             .build()
     }
     
+    override fun onRevoke() {
+        Log.w(TAG, "VPN permission revoked")
+        cleanupVpn()
+        super.onRevoke()
+    }
+
     override fun onDestroy() {
+        cleanupVpn()
         super.onDestroy()
-        stopVpn()
+    }
+
+    private fun cleanupVpn() {
+        isRunning = false
+        vpnInterface?.close()
+        vpnInterface = null
+        stopForeground(STOP_FOREGROUND_REMOVE)
     }
 }

@@ -50,11 +50,11 @@ class ShizukuHelper(private val context: Context) {
                 it.readText()
             }
 
-            process.waitFor()
+            val exitCode = process.waitFor()
             process.destroy()
 
-            if (error.isNotEmpty()) {
-                "Error: $error"
+            if (exitCode != 0) {
+                "Error: exit=$exitCode ${error.ifBlank { output }}".trim()
             } else {
                 output
             }
@@ -68,8 +68,11 @@ class ShizukuHelper(private val context: Context) {
             val tempFile = File(context.cacheDir, "temp_hosts")
             tempFile.writeText(content)
 
+            val escapedTemp = tempFile.absolutePath.replace("'", "'\\''")
+            val escapedPath = path.replace("'", "'\\''")
+
             val command =
-                "cat '${tempFile.absolutePath}' > '$path' && chmod 644 '$path'"
+                "cat '$escapedTemp' > '$escapedPath' && chmod 644 '$escapedPath'"
 
             val result = executeCommand(command)
 
@@ -90,10 +93,15 @@ class ShizukuHelper(private val context: Context) {
         )
 
         for (cmd in commands) {
-            executeCommand(cmd)
+            val result = executeCommand(cmd)
+
+            if (!result.startsWith("Error:") &&
+                !result.startsWith("Exception:")) {
+                return true
+            }
         }
 
-        return true
+        return false
     }
 
     fun backupHosts(): Boolean {
