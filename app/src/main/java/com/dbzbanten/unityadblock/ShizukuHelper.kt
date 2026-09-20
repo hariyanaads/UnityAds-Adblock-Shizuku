@@ -104,6 +104,15 @@ class ShizukuHelper(private val context: Context) {
         return false
     }
 
+    fun canWriteSystemHosts(): Boolean {
+        val result = executeCommand(
+            "test -w /system/etc/hosts && echo WRITABLE || echo NOT_WRITABLE"
+        )
+
+        return result.contains("WRITABLE") &&
+            !result.contains("NOT_WRITABLE")
+    }
+
     fun backupHosts(): Boolean {
         return try {
             val result = executeCommand(
