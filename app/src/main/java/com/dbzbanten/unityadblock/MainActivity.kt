@@ -212,28 +212,66 @@ class MainActivity : AppCompatActivity() {
             try {
                 btnApplyHosts.isEnabled = false
                 btnApplyHosts.text = "Applying..."
-                
-                if (Shizuku.checkSelfPermission() == PackageManager.PERMISSION_GRANTED) {
+
+                if (Shizuku.checkSelfPermission() ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
                     val result = hostsManager.applyHostsViaShizuku()
+
                     if (result) {
-                        Toast.makeText(this@MainActivity, "Hosts applied successfully!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@MainActivity,
+                            "System hosts applied successfully!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
                         tvStatus.text = "System hosts modified"
-                        cardStatus.setCardBackgroundColor(ContextCompat.getColor(this@MainActivity, R.color.unity_blue_dark))
+
+                        cardStatus.setCardBackgroundColor(
+                            ContextCompat.getColor(
+                                this@MainActivity,
+                                R.color.unity_blue_dark
+                            )
+                        )
                     } else {
-                        Toast.makeText(this@MainActivity, "Failed to apply hosts", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@MainActivity,
+                            "System hosts read-only. Starting VPN hosts filter...",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        tvStatus.text = "Starting VPN hosts filter..."
+
+                        requestVpnPermission()
                     }
                 } else {
-                    Toast.makeText(this@MainActivity, "Shizuku permission required!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        "Shizuku unavailable. Starting VPN hosts filter...",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    tvStatus.text = "Starting VPN hosts filter..."
+
+                    requestVpnPermission()
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@MainActivity,
+                    "System hosts unavailable. Starting VPN filter...",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                tvStatus.text = "Starting VPN hosts filter..."
+
+                requestVpnPermission()
             } finally {
                 btnApplyHosts.isEnabled = true
-                btnApplyHosts.text = "Apply System Hosts"
+                btnApplyHosts.text = "Apply Hosts"
             }
         }
     }
-    
+
     private fun requestVpnPermission() {
         val intent = AndroidVpnService.prepare(this)
         if (intent != null) {
