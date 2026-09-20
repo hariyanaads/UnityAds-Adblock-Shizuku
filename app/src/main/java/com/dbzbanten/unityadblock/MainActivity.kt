@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         ) {
             if (intent?.action != VpnService.ACTION_VPN_STATUS) return
 
-            when (intent.getStringExtra(VpnService.EXTRA_STATUS)) {
+            when (intent?.getStringExtra(VpnService.EXTRA_STATUS)) {
                 VpnService.STATUS_STARTING -> {
                     tvStatus.text = "Starting VPN..."
                     cardStatus.setCardBackgroundColor(
